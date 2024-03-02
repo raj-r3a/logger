@@ -20,3 +20,17 @@ export type LogType = {
   type: LogType;
   details: JsonObject;
 };
+
+export type LoggerConfig = {
+  logLevel: string;
+  metaFields: JsonObject;
+  redact?: RedactObject;
+  name?: string;
+  transport?: {
+    prettyPrint?: true;
+    file?: {
+      path: string;
+      filenamePrefix?: string;
+    };
+  };
+};

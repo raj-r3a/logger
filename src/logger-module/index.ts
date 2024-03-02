@@ -1,28 +1,58 @@
 import pino, { stdTimeFunctions, stdSerializers } from 'pino';
+
 import {
   JsonObject,
-  RedactObject,
   LogType,
   LoggerMessageObject,
+  LoggerConfig,
 } from '../types/types';
 import { levelFormatter } from '../logger-format';
 import * as enums from '../constants/enums';
-import { populateErrorObject } from '../helpers';
+import { populateLogMessage } from '../helpers';
+// import rotatingFileStream from '../transports';
 
 export default class Logger {
   private logLevel: string;
   private name?: string;
   private metaFields: JsonObject;
-  private LoggerModule: pino.Logger;
-  constructor(
-    logLevel: string,
-    metaFields: JsonObject,
-    redact?: RedactObject | null,
-    name?: string,
-  ) {
+  private transportOptions;
+  private LoggerModule;
+  private redactOptions;
+
+  constructor(options: LoggerConfig) {
+    const { logLevel, metaFields, name, transport, redact } = options;
     this.logLevel = logLevel;
     this.name = name;
     this.metaFields = metaFields;
+    this.transportOptions = transport;
+    this.redactOptions = redact;
+
+    // const transport = pino.transport({
+    //   target: 'pino/file',
+    //   options: { destination: `${__dirname}/app.log` },
+    // });
+    console.log(this.redactOptions);
+
+    const transportConfig: any = {
+      options: {},
+    };
+    if (this.transportOptions?.file) {
+      transportConfig.target = '../transports/rotatingFileStream.js';
+      transportConfig.options = {
+        path: this.transportOptions.file.path,
+        filenamePrefix: this.transportOptions.file.filenamePrefix,
+      };
+    } else {
+      transportConfig.target = 'pino-pretty';
+      transportConfig.options = {
+        colorize: true,
+        levelFirst: true,
+        messageKey: 'message',
+        levelLabel: 'levelLabel',
+        customLevels: 'metric:45',
+        useOnlyCustomProps: false,
+      };
+    }
 
     const loggerModule = pino({
       level: this.logLevel,
@@ -32,19 +62,6 @@ export default class Logger {
         metric: 45,
       },
       messageKey: 'message',
-      //   hooks: {
-      //     logMethod(inputArgs, method: LogFn, level: number | string) {
-      //       //   console.log('in console', { inputArgs, method, level });
-      //       Object.keys(inputArgs[0]).forEach((key) => {
-      //         if (key === 'error') {
-      //           const { message, stack } = stdSerializers.err(inputArgs[0][key]);
-      //           inputArgs[0][key] = { message, stack };
-      //         }
-      //       });
-      //       console.log('before sending to pino', inputArgs);
-      //       return method.apply(this, inputArgs);
-      //     },
-      //   },
       serializers: {
         error: stdSerializers.err,
       },
@@ -55,9 +72,11 @@ export default class Logger {
       formatters: {
         level: levelFormatter,
       },
+      transport: transportConfig,
     });
 
     this.LoggerModule = loggerModule;
+    // return this.LoggerModule;
   }
 
   info(
@@ -65,7 +84,9 @@ export default class Logger {
     tracingId: string | number,
     logType: LogType,
   ) {
-    this.LoggerModule.info({ ...messageObject, tracingId, logType: logType });
+    this.LoggerModule.info(
+      populateLogMessage(messageObject, tracingId, logType, false),
+    );
   }
 
   fatal(
@@ -73,10 +94,9 @@ export default class Logger {
     tracingId: string | number,
     logType: LogType,
   ) {
-    if (messageObject.error) {
-      populateErrorObject(messageObject);
-    }
-    this.LoggerModule.info({ ...messageObject, tracingId, logType: logType });
+    this.LoggerModule.fatal(
+      populateLogMessage(messageObject, tracingId, logType),
+    );
   }
 
   debug(
@@ -84,10 +104,9 @@ export default class Logger {
     tracingId: string | number,
     logType: LogType,
   ) {
-    if (messageObject.error) {
-      populateErrorObject(messageObject);
-    }
-    this.LoggerModule.info({ ...messageObject, tracingId, logType: logType });
+    this.LoggerModule.debug(
+      populateLogMessage(messageObject, tracingId, logType),
+    );
   }
 
   error(
@@ -95,10 +114,9 @@ export default class Logger {
     tracingId: string | number,
     logType: LogType,
   ) {
-    if (messageObject.error) {
-      populateErrorObject(messageObject);
-    }
-    this.LoggerModule.info({ ...messageObject, tracingId, logType: logType });
+    this.LoggerModule.error(
+      populateLogMessage(messageObject, tracingId, logType),
+    );
   }
 
   trace(
@@ -106,7 +124,9 @@ export default class Logger {
     tracingId: string | number,
     logType: LogType,
   ) {
-    this.LoggerModule.info({ ...messageObject, tracingId, logType: logType });
+    this.LoggerModule.trace(
+      populateLogMessage(messageObject, tracingId, logType, false),
+    );
   }
 
   warn(
@@ -114,21 +134,37 @@ export default class Logger {
     tracingId: string | number,
     logType: LogType,
   ) {
-    if (messageObject.error) {
-      populateErrorObject(messageObject);
-    }
-    this.LoggerModule.info({ ...messageObject, tracingId, logType: logType });
+    this.LoggerModule.warn(
+      populateLogMessage(messageObject, tracingId, logType),
+    );
+  }
+
+  metric(
+    messageObject: LoggerMessageObject,
+    tracingId: string | number,
+    logType: LogType,
+  ) {
+    this.LoggerModule.metric(
+      populateLogMessage(messageObject, tracingId, logType, false),
+    );
   }
 }
 
-const logger = new Logger('debug', { filename: __filename }, null, 'goDaddy');
+const logger = new Logger({
+  logLevel: 'debug',
+  metaFields: {
+    filename: __filename,
+  },
+  name: 'godaddy',
+  transport: {
+    file: {
+      path: './logs',
+      filenamePrefix: 'log',
+    },
+  },
+});
 
-// logger.debug({
-//   message: 'sample message',
-//   error: new Error('custom err'),
-// });
-
-logger.info(
+logger.debug(
   {
     message: 'info message',
     data: { context: 'sample' },
@@ -140,3 +176,8 @@ logger.info(
     details: { event: 'sync', entity: 'customer' },
   },
 );
+
+logger.metric({ message: 'synced a customer' }, 'id-4', {
+  type: enums.LogType.SUCCESS,
+  details: { event: 'sync', entity: 'customer' },
+});
