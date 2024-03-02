@@ -1,5 +1,4 @@
 import pino, { stdTimeFunctions, stdSerializers } from 'pino';
-
 import {
   JsonObject,
   LogType,
@@ -7,9 +6,7 @@ import {
   LoggerConfig,
 } from '../types/types';
 import { levelFormatter } from '../logger-format';
-import * as enums from '../constants/enums';
 import { populateLogMessage } from '../helpers';
-// import rotatingFileStream from '../transports';
 
 export default class Logger {
   private logLevel: string;
@@ -73,13 +70,17 @@ export default class Logger {
     });
 
     this.LoggerModule = loggerModule;
-    // return this.LoggerModule;
+    return this;
+  }
+
+  getBaseLogger() {
+    return this.LoggerModule;
   }
 
   info(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.info(
       populateLogMessage(messageObject, tracingId, logType, false),
@@ -88,8 +89,8 @@ export default class Logger {
 
   fatal(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.fatal(
       populateLogMessage(messageObject, tracingId, logType),
@@ -98,8 +99,8 @@ export default class Logger {
 
   debug(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.debug(
       populateLogMessage(messageObject, tracingId, logType),
@@ -108,8 +109,8 @@ export default class Logger {
 
   error(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.error(
       populateLogMessage(messageObject, tracingId, logType),
@@ -118,8 +119,8 @@ export default class Logger {
 
   trace(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.trace(
       populateLogMessage(messageObject, tracingId, logType, false),
@@ -128,8 +129,8 @@ export default class Logger {
 
   warn(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.warn(
       populateLogMessage(messageObject, tracingId, logType),
@@ -138,50 +139,11 @@ export default class Logger {
 
   metric(
     messageObject: LoggerMessageObject,
-    tracingId: string | number,
-    logType: LogType,
+    tracingId?: string | number,
+    logType?: LogType,
   ) {
     this.LoggerModule.metric(
       populateLogMessage(messageObject, tracingId, logType, false),
     );
   }
 }
-
-const logger = new Logger({
-  logLevel: 'debug',
-  metaFields: {
-    filename: __filename,
-  },
-  name: 'godaddy',
-  redact: {
-    paths: ['token'],
-    censor: '**redacted**',
-    remove: false,
-  },
-  //   transport: {
-  //     file: {
-  //       path: './logs',
-  //       filenamePrefix: 'log',
-  //     },
-  //   },
-});
-
-logger.debug(
-  {
-    message: 'info message',
-    data: { context: 'sample', token: 'token 3' },
-    extra: { abc: 1 },
-    error: new Error('custom error'),
-    token: 'token 2',
-  },
-  'sample-id',
-  {
-    type: enums.LogType.SUCCESS,
-    details: { event: 'sync', entity: 'customer', token: 'token 1' },
-  },
-);
-
-logger.metric({ message: 'synced a customer' }, 'id-4', {
-  type: enums.LogType.SUCCESS,
-  details: { event: 'sync', entity: 'customer' },
-});

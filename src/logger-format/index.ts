@@ -14,7 +14,6 @@ export function logFormatMethod(
   method: LogFn,
   level: number | string,
 ) {
-  console.log('in console', { inputArgs, method, level });
   Object.keys(inputArgs[0]).forEach((key) => {
     if (key === 'error') {
       const { message, stack } = stdSerializers.err(inputArgs[0][key]);

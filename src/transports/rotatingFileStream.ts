@@ -10,7 +10,7 @@ export function rotatingFileStream(options: {
   maxFiles?: number;
   filenamePrefix?: string;
 }) {
-  console.log(' in here');
+  // console.log(' in here');
   const date = new Date();
   const { filename, path, size, interval, maxFiles, filenamePrefix } = options;
 
@@ -18,7 +18,7 @@ export function rotatingFileStream(options: {
   const filenameConstructed = filename
     ? path + filename
     : `${path || __dirname + (filenamePrefix || '/logs')}/default-${formattedDate}.log`;
-  console.log({ filename, path, options, filenameConstructed });
+  // console.log({ filename, path, options, filenameConstructed });
 
   const stream = createStream(filenameConstructed, {
     size: size || '10M',
