@@ -23,7 +23,6 @@ export function populateLogMessage(
   }
   return {
     ...messageObject,
-    error: messageObject.error,
     tracingId,
     logType,
   };

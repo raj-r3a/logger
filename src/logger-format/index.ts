@@ -1,5 +1,4 @@
 import { LogFn, stdSerializers } from 'pino';
-import { JsonObject } from '../types/types';
 
 export function levelFormatter(label, number) {
   return { level: label };
@@ -11,7 +10,7 @@ export function bindingsFormatter(bindings) {
 
 export function logFormatMethod(
   context,
-  inputArgs: Array<string | number | JsonObject | boolean>,
+  inputArgs: Array<any>,
   method: LogFn,
   level: number | string,
 ) {
@@ -23,5 +22,5 @@ export function logFormatMethod(
     }
   });
 
-  //   return method.apply(context, inputArgs);
+  //   return method.apply(context, ...inputArgs);
 }

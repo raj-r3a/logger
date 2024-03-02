@@ -27,12 +27,6 @@ export default class Logger {
     this.transportOptions = transport;
     this.redactOptions = redact;
 
-    // const transport = pino.transport({
-    //   target: 'pino/file',
-    //   options: { destination: `${__dirname}/app.log` },
-    // });
-    console.log(this.redactOptions);
-
     const transportConfig: any = {
       options: {},
     };
@@ -58,19 +52,22 @@ export default class Logger {
       level: this.logLevel,
       name: this.name,
       base: undefined,
+      redact: this.redactOptions,
       customLevels: {
         metric: 45,
       },
+
       messageKey: 'message',
       serializers: {
         error: stdSerializers.err,
       },
       timestamp: stdTimeFunctions.isoTime,
-      mixin: () => {
+      mixin: async () => {
         return this.metaFields;
       },
       formatters: {
         level: levelFormatter,
+        // bindings: bindingsFormatter,
       },
       transport: transportConfig,
     });
@@ -156,24 +153,31 @@ const logger = new Logger({
     filename: __filename,
   },
   name: 'godaddy',
-  transport: {
-    file: {
-      path: './logs',
-      filenamePrefix: 'log',
-    },
+  redact: {
+    paths: ['token'],
+    censor: '**redacted**',
+    remove: false,
   },
+  //   transport: {
+  //     file: {
+  //       path: './logs',
+  //       filenamePrefix: 'log',
+  //     },
+  //   },
 });
 
 logger.debug(
   {
     message: 'info message',
-    data: { context: 'sample' },
+    data: { context: 'sample', token: 'token 3' },
+    extra: { abc: 1 },
     error: new Error('custom error'),
+    token: 'token 2',
   },
   'sample-id',
   {
     type: enums.LogType.SUCCESS,
-    details: { event: 'sync', entity: 'customer' },
+    details: { event: 'sync', entity: 'customer', token: 'token 1' },
   },
 );
 

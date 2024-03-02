@@ -8,7 +8,6 @@ function rotatingFileStream(options = {}) {
   const filenameConstructed = filename
     ? path + filename
     : `${(path || __dirname) + '/' + (filenamePrefix || 'default')}-${formattedDate}.log`;
-  console.log({ filename, path, options, filenameConstructed });
 
   const stream = createStream(filenameConstructed, {
     size: size || '10M',
