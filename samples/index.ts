@@ -30,6 +30,9 @@ const logger2 = new Logger({
     file: {
       path: './logs',
       filenamePrefix: 'log',
+      size: '10M', // default 10M
+      maxFiles: 2, // default 2
+      interval: '2d', //default 1d,
     },
   },
 });

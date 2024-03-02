@@ -29,10 +29,7 @@ export default class Logger {
     };
     if (this.transportOptions?.file) {
       transportConfig.target = '../transports/rotatingFileStream.js';
-      transportConfig.options = {
-        path: this.transportOptions.file.path,
-        filenamePrefix: this.transportOptions.file.filenamePrefix,
-      };
+      transportConfig.options = this.transportOptions.file;
     } else {
       transportConfig.target = 'pino-pretty';
       transportConfig.options = {

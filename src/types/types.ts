@@ -31,6 +31,9 @@ export type LoggerConfig = {
     file?: {
       path: string;
       filenamePrefix?: string;
+      size: string;
+      maxFiles: number;
+      interval: string;
     };
   };
 };
