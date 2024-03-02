@@ -47,7 +47,7 @@ logger.debug(
   },
   'sample-id',
   {
-    type: LogType.SUCCESS,
+    type: LogType.SUCCESS, // supported logtype values are SUMMARY, FAILURE, SUCCESS
     details: { event: 'sync', entity: 'customer', token: 'token 1' },
   },
 );
