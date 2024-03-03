@@ -17,7 +17,16 @@
   "keywords": [
     "logger"
   ],
-  "author": "rajkumar.r3a@gmail.com",
+  "author": "Raj Kumar <rajkumar.r3a@gmail.com>",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/raj-r3a/logger/issues"
@@ -41,5 +50,8 @@
     "pino": "^8.19.0",
     "pino-pretty": "^10.3.1",
     "rotating-file-stream": "^3.2.1"
+  },
+  "directories": {
+    "test": "test"
   }
 }
