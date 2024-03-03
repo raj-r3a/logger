@@ -7,6 +7,7 @@ import {
 } from '../types/types';
 import { levelFormatter } from '../logger-format';
 import { populateLogMessage } from '../helpers';
+import prettyPrintConfig from '../transports/pretty-print';
 
 export default class Logger {
   private logLevel: string;
@@ -24,22 +25,14 @@ export default class Logger {
     this.transportOptions = transport;
     this.redactOptions = redact;
 
-    const transportConfig: any = {
+    let transportConfig: any = {
       options: {},
     };
     if (this.transportOptions?.file) {
       transportConfig.target = '../transports/rotatingFileStream.js';
       transportConfig.options = this.transportOptions.file;
     } else {
-      transportConfig.target = 'pino-pretty';
-      transportConfig.options = {
-        colorize: true,
-        levelFirst: true,
-        messageKey: 'message',
-        levelLabel: 'levelLabel',
-        customLevels: 'metric:45',
-        useOnlyCustomProps: false,
-      };
+      transportConfig = prettyPrintConfig;
     }
 
     const loggerModule = pino({

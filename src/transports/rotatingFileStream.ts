@@ -1,15 +1,17 @@
 import { createStream } from 'rotating-file-stream';
 // import pino from 'pino';
 
-export function rotatingFileStream(options: {
-  filename?: string | undefined;
-  path?: string | undefined;
-  size?: string;
-  interval?: string;
-  compress?: string;
-  maxFiles?: number;
-  filenamePrefix?: string;
-}) {
+export default function rotatingFileStream(
+  options: {
+    filename?: string | undefined;
+    path?: string | undefined;
+    size?: string;
+    interval?: string;
+    compress?: string;
+    maxFiles?: number;
+    filenamePrefix?: string;
+  } = {},
+) {
   // console.log(' in here');
   const date = new Date();
   const { filename, path, size, interval, maxFiles, filenamePrefix } = options;
@@ -28,7 +30,3 @@ export function rotatingFileStream(options: {
 
   return stream;
 }
-
-// const stream = rotatingFileStream();
-
-// stream.write('1234-loggggggeddd');
