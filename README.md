@@ -22,7 +22,7 @@ fatal - 60
 
 ## Sample Usage
 
-Please refer the [samples](https://github.com/raj-r3a/logger/blob/main/samples/index.ts) section in the repository
+Please refer the [samples](https://github.com/raj-r3a/logger/blob/main/samples) section in the repository
 
 ## Specification
 
