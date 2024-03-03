@@ -1,4 +1,4 @@
-import { LogType } from '../constants/enums';
+import { LogType as LogTypeEnum } from '../constants/enums';
 
 export type JsonObject = {
   [key: string]: any;
@@ -17,7 +17,7 @@ export type LoggerMessageObject = {
 };
 
 export type LogType = {
-  type: LogType;
+  type: LogTypeEnum;
   details: JsonObject;
 };
 

@@ -18,9 +18,4 @@ function rotatingFileStream(options = {}) {
   return stream;
 }
 
-rotatingFileStream({
-  path: './logs',
-  filenamePrefix: 'log',
-});
-
 module.exports = rotatingFileStream;
