@@ -8,7 +8,7 @@ const logger = new Logger({
   },
   name: 'godaddy',
   redact: {
-    paths: ['token'],
+    paths: ['token', 'data.token'],
     censor: '**redacted**',
     remove: false,
   },

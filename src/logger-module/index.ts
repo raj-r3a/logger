@@ -49,9 +49,9 @@ export default class Logger {
         error: stdSerializers.err,
       },
       timestamp: stdTimeFunctions.isoTime,
-      mixin: async () => {
-        return this.metaFields;
-      },
+      // mixin: () => {
+      //   return this.metaFields;
+      // },
       formatters: {
         level: levelFormatter,
         // bindings: bindingsFormatter,
@@ -59,7 +59,8 @@ export default class Logger {
       transport: transportConfig,
     });
 
-    this.LoggerModule = loggerModule;
+    this.LoggerModule = loggerModule.child(this.metaFields);
+
     return this;
   }
 
